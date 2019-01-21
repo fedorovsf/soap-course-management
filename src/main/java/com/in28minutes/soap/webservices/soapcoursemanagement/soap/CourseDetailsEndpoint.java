@@ -11,6 +11,8 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import java.util.List;
 
+import static com.in28minutes.soap.webservices.soapcoursemanagement.soap.service.CourseDetailsService.Status.FAILURE;
+
 @Endpoint
 public class CourseDetailsEndpoint {
 	
@@ -34,6 +36,24 @@ public class CourseDetailsEndpoint {
 
 
 		return mapAllCourseDetails(courses);
+	}
+
+	@PayloadRoot(namespace = "http://in28minutes.com/courses", localPart = "DeleteCourseDetailsRequest")
+	@ResponsePayload
+	public DeleteCourseDetailsResponse deleteCourseDetailsRequest(@RequestPayload DeleteCourseDetailsRequest request) {
+
+		CourseDetailsService.Status status = service.deleteById(request.getId());
+		DeleteCourseDetailsResponse response = new DeleteCourseDetailsResponse();
+		response.setStatus(mapStatus(status));
+
+		return response;
+	}
+
+	private Status mapStatus(CourseDetailsService.Status status) {
+		if(status == FAILURE)
+			return Status.FAILURE;
+
+		return Status.SUCCESS;
 	}
 
 	private GetCourseDetailsResponse mapCourseDetails(Course course) {
